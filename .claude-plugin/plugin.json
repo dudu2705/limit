@@ -1,0 +1,9 @@
+{
+  "name": "limit",
+  "displayName": "Context Limit Bar",
+  "version": "1.0.0",
+  "description": "A status line gauge that starts at 100% and drains as the session consumes the context window token limit.",
+  "author": {
+    "name": "dudupro0o"
+  }
+}
