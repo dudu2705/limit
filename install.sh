@@ -1,11 +1,14 @@
 #!/bin/bash
 # Installs the "limit" status-line plugin on THIS machine:
-#   1. Copies scripts/limit-bar.sh into ~/.claude/plugins/limit/
+#   1. Fetches scripts/limit-bar.sh into ~/.claude/plugins/limit/
+#      (from a local clone if run from inside this repo, otherwise from GitHub)
 #   2. Merges a "statusLine" entry into ~/.claude/settings.json
 #      (keeps any other settings already in that file)
 #
-# Run this once on every new machine after copying/cloning this folder there:
+# Run it from a clone:
 #   bash install.sh
+# Or in one line, on any machine, with no clone needed:
+#   curl -fsSL https://raw.githubusercontent.com/dudu2705/limit/main/install.sh | bash
 
 set -euo pipefail
 
@@ -16,13 +19,22 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 1
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RAW_URL="https://raw.githubusercontent.com/dudu2705/limit/main/scripts/limit-bar.sh"
 DEST_DIR="$HOME/.claude/plugins/limit/scripts"
 DEST_SCRIPT="$DEST_DIR/limit-bar.sh"
 SETTINGS="$HOME/.claude/settings.json"
 
 mkdir -p "$DEST_DIR"
-cp "$SCRIPT_DIR/scripts/limit-bar.sh" "$DEST_SCRIPT"
+
+# ${BASH_SOURCE[0]} points at a real file only when this script is run from a
+# saved/cloned copy. When piped straight from curl, there is no local file to
+# copy from, so fall back to downloading it from GitHub.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || true)"
+if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/scripts/limit-bar.sh" ]; then
+  cp "$SCRIPT_DIR/scripts/limit-bar.sh" "$DEST_SCRIPT"
+else
+  curl -fsSL "$RAW_URL" -o "$DEST_SCRIPT"
+fi
 chmod +x "$DEST_SCRIPT"
 
 mkdir -p "$(dirname "$SETTINGS")"
