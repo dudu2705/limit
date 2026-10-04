@@ -29,7 +29,7 @@ mkdir -p "$DEST_DIR"
 # ${BASH_SOURCE[0]} points at a real file only when this script is run from a
 # saved/cloned copy. When piped straight from curl, there is no local file to
 # copy from, so fall back to downloading it from GitHub.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || true)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-}")" 2>/dev/null && pwd || true)"
 if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/scripts/limit-bar.sh" ]; then
   cp "$SCRIPT_DIR/scripts/limit-bar.sh" "$DEST_SCRIPT"
 else
